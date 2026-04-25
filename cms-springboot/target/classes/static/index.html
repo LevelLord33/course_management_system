@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CMS — Course Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">CMS</div>
+    <div class="brand-tagline">Course Management</div>
+  </div>
+  <nav>
+    <div class="nav-section">OVERVIEW</div>
+    <a class="nav-link" data-page="dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </a>
+    <div class="nav-section">MANAGE</div>
+    <a class="nav-link" data-page="courses">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Courses
+    </a>
+    <a class="nav-link" data-page="students">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Students
+    </a>
+    <div class="nav-section">OPERATIONS</div>
+    <a class="nav-link" data-page="enrollments">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Enrollments
+    </a>
+    <a class="nav-link" data-page="grades">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Grades
+    </a>
+    <a class="nav-link" data-page="report">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Report
+    </a>
+  </nav>
+  <div class="sidebar-status"><span class="status-dot"></span> Server Online · Port 8001</div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <h1 id="pageTitle">Dashboard</h1>
+    <div class="topbar-actions">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="globalSearch" placeholder="Search courses...">
+      </div>
+    </div>
+  </header>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- DASHBOARD -->
+  <div class="page" id="page-dashboard">
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="stat-label">Total Courses</div>
+        <div class="stat-value" id="statCourses">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Students</div>
+        <div class="stat-value" id="statStudents">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Enrollments</div>
+        <div class="stat-value" id="statEnrollments">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Open Courses</div>
+        <div class="stat-value" id="statAvailable">0</div>
+      </div>
+    </div>
+    <div class="dash-grid">
+      <div>
+        <div class="section-head">All Courses</div>
+        <div class="course-grid" id="dashCourseGrid"></div>
+      </div>
+      <div>
+        <div class="section-head">Students</div>
+        <div class="student-list" id="dashStudentList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSES -->
+  <div class="page" id="page-courses">
+    <div class="toolbar">
+      <input class="field" type="text" id="courseSearch" placeholder="Search courses...">
+      <button class="btn btn-primary" onclick="openModal('modalAddCourse')">+ Add Course</button>
+    </div>
+    <div class="table-card">
+      <table class="tbl">
+        <thead><tr>
+          <th>ID</th><th>Code</th><th>Name</th><th>Instructor</th>
+          <th>Credits</th><th>Category</th><th>Seats</th><th>Status</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="courseTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STUDENTS -->
+  <div class="page" id="page-students">
+    <div class="toolbar">
+      <input class="field" type="text" id="studentSearch" placeholder="Search students...">
+      <button class="btn btn-primary" onclick="openModal('modalAddStudent')">+ Add Student</button>
+    </div>
+    <div class="table-card">
+      <table class="tbl">
+        <thead><tr>
+          <th>ID</th><th>Roll No</th><th>Name</th><th>Email</th>
+          <th>Department</th><th>Semester</th><th>Courses</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="studentTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ENROLLMENTS — plain selects, no CSS class that breaks them -->
+  <div class="page" id="page-enrollments">
+    <div class="enroll-grid">
+
+      <div class="card">
+        <div class="card-title">Enroll a Student</div>
+        <div class="field-group">
+          <label class="field-label">Student</label>
+          <select id="selStudent" class="native-select">
+            <option value="">— choose student —</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Course</label>
+          <select id="selCourse" class="native-select">
+            <option value="">— choose course —</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-block" id="btnEnroll" onclick="doEnroll()">Enroll Now</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Course Roster</div>
+        <div class="field-group">
+          <label class="field-label">View enrollments for course</label>
+          <select id="selViewCourse" class="native-select" onchange="loadRoster()">
+            <option value="">— choose course —</option>
+          </select>
+        </div>
+        <div id="rosterList" style="margin-top:12px"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GRADES -->
+  <div class="page" id="page-grades">
+    <div class="toolbar">
+      <select id="selGradeStudent" class="native-select" style="max-width:340px" onchange="loadGrades()">
+        <option value="">— select student to manage grades —</option>
+      </select>
+    </div>
+    <div id="gradesContainer"></div>
+  </div>
+
+  <!-- REPORT -->
+  <div class="page" id="page-report">
+    <div class="toolbar">
+      <button class="btn btn-primary" id="btnReport" onclick="genReport()">Generate Report</button>
+      <button class="btn btn-outline" onclick="dlReport()">↓ Download</button>
+    </div>
+    <pre class="report-box" id="reportBox">Click "Generate Report" to create the full system report.</pre>
+  </div>
+</div>
+
+<!-- ========= MODALS ========= -->
+
+<!-- Add Course -->
+<div class="modal-bg" id="modalAddCourse">
+  <div class="modal">
+    <div class="modal-head"><span>Add New Course</span><button onclick="closeModal('modalAddCourse')">✕</button></div>
+    <div class="modal-body">
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Course Name *</label><input class="field" id="cName" placeholder="e.g. Data Structures"></div>
+        <div class="field-group"><label class="field-label">Course Code *</label><input class="field" id="cCode" placeholder="e.g. CS301"></div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Instructor</label><input class="field" id="cInst" placeholder="Instructor name"></div>
+        <div class="field-group"><label class="field-label">Category</label>
+          <select class="field" id="cCat">
+            <option value="">Select...</option>
+            <option>Computer Science</option><option>Mathematics</option><option>Physics</option>
+            <option>Chemistry</option><option>Electronics</option><option>Mechanical</option>
+            <option>Civil</option><option>Arts</option><option>Commerce</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Credits (1–10) *</label><input class="field" type="number" id="cCr" min="1" max="10" placeholder="4"></div>
+        <div class="field-group"><label class="field-label">Max Seats *</label><input class="field" type="number" id="cMax" min="1" placeholder="60"></div>
+      </div>
+      <div class="field-group"><label class="field-label">Description</label><textarea class="field" id="cDesc" rows="2" placeholder="Brief description..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modalAddCourse')">Cancel</button>
+      <button class="btn btn-primary" id="btnSaveCourse" onclick="saveCourse()">Save Course</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Course -->
+<div class="modal-bg" id="modalEditCourse">
+  <div class="modal">
+    <div class="modal-head"><span>Edit Course</span><button onclick="closeModal('modalEditCourse')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="eCId">
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Course Name *</label><input class="field" id="eCName"></div>
+        <div class="field-group"><label class="field-label">Course Code *</label><input class="field" id="eCCode"></div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Instructor</label><input class="field" id="eCInst"></div>
+        <div class="field-group"><label class="field-label">Category</label>
+          <select class="field" id="eCCat">
+            <option value="">Select...</option>
+            <option>Computer Science</option><option>Mathematics</option><option>Physics</option>
+            <option>Chemistry</option><option>Electronics</option><option>Mechanical</option>
+            <option>Civil</option><option>Arts</option><option>Commerce</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Credits *</label><input class="field" type="number" id="eCCr" min="1" max="10"></div>
+        <div class="field-group"><label class="field-label">Max Seats *</label><input class="field" type="number" id="eCMax" min="1"></div>
+      </div>
+      <div class="field-group"><label class="field-label">Description</label><textarea class="field" id="eCDesc" rows="2"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modalEditCourse')">Cancel</button>
+      <button class="btn btn-primary" id="btnUpdateCourse" onclick="updateCourse()">Update Course</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Student -->
+<div class="modal-bg" id="modalAddStudent">
+  <div class="modal">
+    <div class="modal-head"><span>Add New Student</span><button onclick="closeModal('modalAddStudent')">✕</button></div>
+    <div class="modal-body">
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Full Name *</label><input class="field" id="sName" placeholder="Student name"></div>
+        <div class="field-group"><label class="field-label">Roll No *</label><input class="field" id="sRoll" placeholder="e.g. 2024CS001"></div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Email</label><input class="field" type="email" id="sEmail" placeholder="student@email.com"></div>
+        <div class="field-group"><label class="field-label">Phone</label><input class="field" id="sPhone" placeholder="+91 XXXXXXXXXX"></div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Department</label>
+          <select class="field" id="sDept">
+            <option value="">Select...</option>
+            <option>Computer Science</option><option>Information Technology</option>
+            <option>Electronics</option><option>Mechanical</option><option>Civil</option>
+            <option>Mathematics</option><option>Physics</option><option>Chemistry</option>
+            <option>Commerce</option><option>Arts</option>
+          </select>
+        </div>
+        <div class="field-group"><label class="field-label">Semester</label>
+          <select class="field" id="sSem">
+            <option value="0">—</option>
+            <option value="1">Semester 1</option><option value="2">Semester 2</option>
+            <option value="3">Semester 3</option><option value="4">Semester 4</option>
+            <option value="5">Semester 5</option><option value="6">Semester 6</option>
+            <option value="7">Semester 7</option><option value="8">Semester 8</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modalAddStudent')">Cancel</button>
+      <button class="btn btn-primary" id="btnSaveStudent" onclick="saveStudent()">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Student -->
+<div class="modal-bg" id="modalEditStudent">
+  <div class="modal">
+    <div class="modal-head"><span>Edit Student</span><button onclick="closeModal('modalEditStudent')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="eSId">
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Full Name *</label><input class="field" id="eSName"></div>
+        <div class="field-group"><label class="field-label">Email</label><input class="field" type="email" id="eSEmail"></div>
+      </div>
+      <div class="row2">
+        <div class="field-group"><label class="field-label">Phone</label><input class="field" id="eSPhone"></div>
+        <div class="field-group"><label class="field-label">Department</label>
+          <select class="field" id="eSDept">
+            <option value="">Select...</option>
+            <option>Computer Science</option><option>Information Technology</option>
+            <option>Electronics</option><option>Mechanical</option><option>Civil</option>
+            <option>Mathematics</option><option>Physics</option><option>Chemistry</option>
+            <option>Commerce</option><option>Arts</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group"><label class="field-label">Semester</label>
+        <select class="field" id="eSSem">
+          <option value="0">—</option>
+          <option value="1">Semester 1</option><option value="2">Semester 2</option>
+          <option value="3">Semester 3</option><option value="4">Semester 4</option>
+          <option value="5">Semester 5</option><option value="6">Semester 6</option>
+          <option value="7">Semester 7</option><option value="8">Semester 8</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modalEditStudent')">Cancel</button>
+      <button class="btn btn-primary" id="btnUpdateStudent" onclick="updateStudent()">Update Student</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
